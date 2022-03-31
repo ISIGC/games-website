@@ -2,12 +2,15 @@ import React from "react"
 import ReactDOM from "react-dom"
 import "./index.css"
 import { ChakraProvider } from "@chakra-ui/react"
+import { BrowserRouter as Router } from "react-router-dom"
 import App from "./App"
 
 ReactDOM.render(
 	<React.StrictMode>
 		<ChakraProvider>
-			<App />
+			<Router>
+				<App />
+			</Router>
 		</ChakraProvider>
 	</React.StrictMode>,
 	document.getElementById("igc")
