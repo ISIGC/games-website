@@ -1,6 +1,7 @@
 import GetGame from "./routes/get-game"
 import Admin from "./routes/admin"
 import Login from "./routes/login"
+import Register from "./routes/register"
 import Copyright from "./components/copyright"
 import { Routes, Route } from "react-router-dom"
 import useAuth from "./components/auth"
@@ -20,6 +21,7 @@ export default function App() {
 					</Route>
 				</Route>
 				<Route path="login" element={<Login resetAuth={resetAuth} />} />
+				<Route path="register" element={<Register resetAuth={resetAuth} />} />
 			</Routes>
 			<Copyright />
 		</>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
-import { Container, Select, Text, Button, Box, Alert, AlertIcon } from "@chakra-ui/react"
+import { Select, Text, Button, Alert, AlertIcon } from "@chakra-ui/react"
 import axios from "../../axios"
+import CardPage from "../../components/cardPage"
 
 export default function GetGame({ user, logout }) {
 	const [game, setGame] = useState("")
@@ -40,35 +41,25 @@ export default function GetGame({ user, logout }) {
 	}
 
 	return (
-		<Container minH="100vh" maxW="container.lg" display="flex" justifyContent="center" alignItems="start">
-			<Box
-				as="form"
-				borderWidth={[0, 1]}
-				borderRadius="md"
-				onSubmit={onSubmit}
-				w={["100%", "60%", "45%", 400]}
-				p={8}
-				mt={[4, 8, 12, 16]}
-			>
-				<Text mb={2} fontSize="md">
-					{user.name}
-				</Text>
-				<Button mb={6} variant="outline" onClick={logout}>
-					Log Out
-				</Button>
-				<Select mb={4} placeholder="Choose a Game" value={game} onChange={(event) => setGame(event.target.value)}>
-					{games &&
-						games.map((game, index) => (
-							<option key={index} value={game.id} disabled={!game.available}>
-								{game.name}
-							</option>
-						))}
-				</Select>
-				<Button mb={10} disabled={!game} variant="outline" type="submit">
-					Get Game
-				</Button>
-				{alerts}
-			</Box>
-		</Container>
+		<CardPage as="form" onSubmit={onSubmit}>
+			<Text mb={2} fontSize="md">
+				{user.name}
+			</Text>
+			<Button mb={6} variant="outline" onClick={logout}>
+				Log Out
+			</Button>
+			<Select mb={4} placeholder="Choose a Game" value={game} onChange={(event) => setGame(event.target.value)}>
+				{games &&
+					games.map((game, index) => (
+						<option key={index} value={game.id} disabled={!game.available}>
+							{game.name}
+						</option>
+					))}
+			</Select>
+			<Button mb={10} disabled={!game} variant="outline" type="submit">
+				Get Game
+			</Button>
+			{alerts}
+		</CardPage>
 	)
 }

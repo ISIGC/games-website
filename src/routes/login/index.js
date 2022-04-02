@@ -1,20 +1,29 @@
 import { useState } from "react"
-import { Container, Input, Button, Box } from "@chakra-ui/react"
+import { FormControl, FormLabel, FormErrorMessage, Input, Button, Link } from "@chakra-ui/react"
 import axios from "../../axios"
-import { useNavigate, useLocation } from "react-router-dom"
+import { useNavigate, useLocation, Link as RouterLink } from "react-router-dom"
+import CardPage from "../../components/cardPage"
 
 export default function Login({ resetAuth }) {
-	const [roll, setRoll] = useState("")
-	const [password, setPassword] = useState("")
+	const [roll, setRoll] = useState({
+		value: "",
+		error: false,
+		message: ""
+	})
+	const [password, setPassword] = useState({
+		value: "",
+		error: false,
+		message: ""
+	})
 	const navigate = useNavigate()
 	const { state } = useLocation()
 	const next = state && state.next
 
-	const onSubmit = async (event) => {
+	const submit = async (event) => {
 		try {
 			event.preventDefault()
 			resetAuth()
-			let data = await axios.post(`/user/login`, { roll: roll, password: password })
+			let data = await axios.post(`/user/login`, { roll: roll.value, password: password.value })
 			if (data.status === 200) {
 				if (next) {
 					navigate(next, { replace: true })
@@ -25,41 +34,68 @@ export default function Login({ resetAuth }) {
 				setRoll("")
 				setPassword("")
 			}
-			// setAlerts((alerts) => [
-			// 	<Alert mb={1} status="success" borderRadius="md">
-			// 		<AlertIcon />
-			// 		{games[id].name} is yours!
-			// 	</Alert>,
-			// 	...alerts
-			// ])
 		} catch (err) {
-			console.log(err)
+			if (err.response) {
+				if (err.response.status === 400) {
+					setRoll({ value: "", error: true, message: "We couldn't find you" })
+					setPassword((password) => ({ ...password, value: "" }))
+				} else if (err.response.status === 401) {
+					if (err.response.data.error === "incorrect password") {
+						setPassword({ value: "", error: true, message: "Your password is incorrect" })
+					} else if (err.response.data.error === "user inactive") {
+						setPassword({ value: "", error: true, message: "Your account is inactive" })
+					}
+				}
+			}
 		}
 	}
 
+	const handleRoll = (event) => {
+		setRoll((roll) => {
+			let newRoll = { ...roll }
+			if (roll.error) {
+				newRoll.error = false
+			}
+			newRoll.value = event.target.value
+			return newRoll
+		})
+	}
+
+	const handlePass = (event) => {
+		setPassword((pass) => {
+			let newPass = { ...pass }
+			if (pass.error) {
+				newPass.error = false
+			}
+			newPass.value = event.target.value
+			return newPass
+		})
+	}
+
 	return (
-		<Container minH="100vh" maxW="container.lg" display="flex" justifyContent="center" alignItems="start">
-			<Box
-				as="form"
-				borderWidth={[0, 1]}
-				borderRadius="md"
-				onSubmit={onSubmit}
-				w={["100%", "60%", "45%", 400]}
-				p={8}
-				mt={[4, 8, 12, 16]}
+		<CardPage as="form" onSubmit={submit}>
+			<FormControl mb={4} as="fieldset" isInvalid={roll.error}>
+				<FormLabel htmlFor="roll">Roll</FormLabel>
+				<Input id="roll" autoComplete="off" autoCapitalize="none" value={roll.value} onChange={handleRoll} />
+				{roll.error && <FormErrorMessage>{roll.message}</FormErrorMessage>}
+			</FormControl>
+			<FormControl mb={6} as="fieldset" isInvalid={password.error}>
+				<FormLabel htmlFor="password">Password</FormLabel>
+				<Input id="password" type="password" value={password.value} onChange={handlePass} />
+				{password.error && <FormErrorMessage>{password.message}</FormErrorMessage>}
+			</FormControl>
+			<Button
+				mb={4}
+				disabled={!(roll.value && password.value && !roll.error && !password.error)}
+				variant="outline"
+				type="submit"
 			>
-				<Input mb={2} placeholder="Roll No." value={roll} onChange={(event) => setRoll(event.target.value)} />
-				<Input
-					mb={4}
-					placeholder="Password"
-					type="password"
-					value={password}
-					onChange={(event) => setPassword(event.target.value)}
-				/>
-				<Button mb={10} disabled={!(roll && password)} variant="outline" type="submit">
-					Log In
-				</Button>
-			</Box>
-		</Container>
+				Log In
+			</Button>
+			<br />
+			<Link mb={10} as={RouterLink} to="/register">
+				Register here
+			</Link>
+		</CardPage>
 	)
 }
