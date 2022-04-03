@@ -4,7 +4,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons"
 export default function Copyright() {
 	return (
 		<Container maxW="container.lg">
-			<Text color="red.700" py={4} fontSize="md" display="flex" justifyContent="center">
+			<Text color="red.700" py={4} fontSize={["xs", "sm"]} display="flex" justifyContent="center">
 				&#169; 2022&nbsp;
 				<Link color="red.900" href="https://www.atchox.com" isExternal>
 					Atreya Choudhury

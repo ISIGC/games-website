@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Container, Select, Button, Box, Alert, AlertIcon } from "@chakra-ui/react"
+import { Select, Button, Alert, AlertIcon } from "@chakra-ui/react"
 import axios from "../../axios"
 import CardPage from "../../components/cardPage"
 

@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { Navigate, Outlet, useLocation } from "react-router-dom"
-import { Box } from "@chakra-ui/react"
+import Loading from "../components/loading"
 
 export default function ProtectedRoute({ user, auth }) {
 	const location = useLocation()
@@ -12,7 +12,7 @@ export default function ProtectedRoute({ user, auth }) {
 	}, [location.pathname])
 
 	if (user === undefined) {
-		return <Box>Loading</Box>
+		return <Loading />
 	} else if (user === null) {
 		return <Navigate to="login" state={{ next: location.pathname }} />
 	}

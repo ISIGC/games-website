@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom"
-import { Box } from "@chakra-ui/react"
+import { Box, Text } from "@chakra-ui/react"
 import Nav from "./nav"
 
 export default function StaffRoute({ user }) {
@@ -11,5 +11,10 @@ export default function StaffRoute({ user }) {
 			</>
 		)
 	}
-	return <Box minH="100vh">You are not authorised to view this page</Box>
+
+	return (
+		<Box height="100vh" display="flex" justifyContent="center" alignItems="center">
+			<Text fontSize={["sm", "md", "xl"]}>You are not authorised to view this page</Text>
+		</Box>
+	)
 }

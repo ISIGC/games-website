@@ -15,6 +15,7 @@ export default function Login({ resetAuth }) {
 		error: false,
 		message: ""
 	})
+	const [loading, setLoading] = useState(false)
 	const navigate = useNavigate()
 	const { state } = useLocation()
 	const next = state && state.next
@@ -23,6 +24,7 @@ export default function Login({ resetAuth }) {
 		try {
 			event.preventDefault()
 			resetAuth()
+			setLoading(true)
 			let data = await axios.post(`/user/login`, { roll: roll.value, password: password.value })
 			if (data.status === 200) {
 				if (next) {
@@ -47,6 +49,7 @@ export default function Login({ resetAuth }) {
 					}
 				}
 			}
+			setLoading(false)
 		}
 	}
 
@@ -87,6 +90,7 @@ export default function Login({ resetAuth }) {
 			<Button
 				mb={8}
 				disabled={!(roll.value && password.value && !roll.error && !password.error)}
+				isLoading={loading}
 				variant="outline"
 				type="submit"
 			>
