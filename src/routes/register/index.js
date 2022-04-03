@@ -1,5 +1,16 @@
 import { useState } from "react"
-import { FormControl, FormLabel, FormErrorMessage, Alert, Input, Button, Link } from "@chakra-ui/react"
+import {
+	FormControl,
+	FormLabel,
+	FormErrorMessage,
+	Alert,
+	Input,
+	Button,
+	Link,
+	UnorderedList,
+	ListItem,
+	Text
+} from "@chakra-ui/react"
 import PhoneInput from "../../components/phoneInput"
 import { formatPhoneNumberIntl, isValidPhoneNumber } from "react-phone-number-input"
 import CardPage from "../../components/cardPage"
@@ -17,9 +28,9 @@ export default function Register() {
 	const [room, setRoom] = useState("")
 	const [gender, setGender] = useState("")
 	const [phone, setPhone] = useState()
-	const [error, setError] = useState({
-		value: false,
-		message: ""
+	const [status, setStatus] = useState({
+		value: null,
+		message: null
 	})
 
 	const submit = (event) => {
@@ -35,21 +46,46 @@ export default function Register() {
 			})
 			.then((data) => {
 				if (data.status === 201) {
-					if (error.value) {
-						setError({ value: false, message: "" })
-					}
 					setRoll("")
 					setPassword((pass) => ({ ...pass, value: "" }))
 					setName("")
 					setRoom("")
 					setGender("")
 					setPhone("")
+					let admins = null
+					axios
+						.get("/user/admin")
+						.then((data) => {
+							admins = data.data
+							setStatus({
+								value: true,
+								message: (
+									<>
+										<Text>
+											Your account has been created.
+											<br />
+											Please get your account activated by any of the following admins:
+										</Text>
+										<UnorderedList>
+											{admins.map((admin, index) => (
+												<ListItem key={index}>
+													{admin.name} at room {admin.room}
+													<br />
+													Phone: {admin.phone}
+												</ListItem>
+											))}
+										</UnorderedList>
+									</>
+								)
+							})
+						})
+						.catch((err) => console.log(err))
 				}
 			})
 			.catch((err) => {
 				if (err.response) {
 					if (err.response.status === 400) {
-						setError({ value: true, message: "User already exists" })
+						setStatus({ value: false, message: "User already exists" })
 					}
 				}
 			})
@@ -97,16 +133,21 @@ export default function Register() {
 				{password.error && <FormErrorMessage>{password.message}</FormErrorMessage>}
 			</FormControl>
 			<Button
-				mb={4}
+				mb={8}
 				disabled={!(roll && password.value && !password.error && name && gender && phone && isValidPhoneNumber(phone))}
 				variant="outline"
 				type="submit"
 			>
 				Register
 			</Button>
-			{error.value && (
-				<Alert status="error" mb={4}>
-					{error.message}
+			{status.value !== null && (
+				<Alert
+					flexDirection="column"
+					sx={{ whiteSpace: "pre-line" }}
+					status={status.value ? "success" : "error"}
+					mb={8}
+				>
+					{status.message}
 				</Alert>
 			)}
 			<br />

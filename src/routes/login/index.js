@@ -73,7 +73,7 @@ export default function Login({ resetAuth }) {
 	}
 
 	return (
-		<CardPage as="form" onSubmit={submit}>
+		<CardPage as="form" onSubmit={submit} display="flex" flexDirection="column" alignItems="start">
 			<FormControl mb={4} as="fieldset" isInvalid={roll.error}>
 				<FormLabel htmlFor="roll">Roll</FormLabel>
 				<Input id="roll" autoComplete="off" autoCapitalize="none" value={roll.value} onChange={handleRoll} />
@@ -85,16 +85,15 @@ export default function Login({ resetAuth }) {
 				{password.error && <FormErrorMessage>{password.message}</FormErrorMessage>}
 			</FormControl>
 			<Button
-				mb={4}
+				mb={8}
 				disabled={!(roll.value && password.value && !roll.error && !password.error)}
 				variant="outline"
 				type="submit"
 			>
 				Log In
 			</Button>
-			<br />
 			<Link mb={10} as={RouterLink} to="/register">
-				Register here
+				Create Account
 			</Link>
 		</CardPage>
 	)

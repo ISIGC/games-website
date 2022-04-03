@@ -6,7 +6,7 @@ export default function Copyright() {
 		<Container maxW="container.lg">
 			<Text color="red.700" py={4} fontSize="md" display="flex" justifyContent="center">
 				&#169; 2022&nbsp;
-				<Link color="red.900" href="https://www.atchox.com">
+				<Link color="red.900" href="https://www.atchox.com" isExternal>
 					Atreya Choudhury
 					<sup>
 						<ExternalLinkIcon ml={0.5} />

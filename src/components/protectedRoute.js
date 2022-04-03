@@ -9,7 +9,7 @@ export default function ProtectedRoute({ user, auth }) {
 		auth()
 		const id = setInterval(auth, 30000)
 		return () => clearInterval(id)
-	}, [auth])
+	}, [location.pathname])
 
 	if (user === undefined) {
 		return <Box>Loading</Box>
