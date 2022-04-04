@@ -3,6 +3,7 @@ import { FormControl, FormLabel, FormErrorMessage, Input, Button, Link } from "@
 import axios from "../../axios"
 import { useNavigate, useLocation, Link as RouterLink } from "react-router-dom"
 import CardPage from "../../components/cardPage"
+import Loading from "../../components/loading"
 
 export default function Login({ resetAuth }) {
 	const [roll, setRoll] = useState({
