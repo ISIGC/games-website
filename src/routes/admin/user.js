@@ -31,13 +31,53 @@ export default function User(props) {
 			})
 	}
 
+	const toggleStaff = () => {
+		if (user.groups.indexOf("staff") !== -1) {
+			axios
+				.delete("/group/staff", {
+					data: {
+						users: user.id
+					}
+				})
+				.then((data) => {
+					if (data.status === 200) {
+						setUser((user) => {
+							let temp = { ...user }
+							temp.groups.splice(user.groups.indexOf("staff"), 1)
+							return temp
+						})
+					}
+				})
+		} else {
+			axios
+				.post("/group/staff", {
+					users: user.id
+				})
+				.then((data) => {
+					if (data.status === 200) {
+						setUser((user) => {
+							let temp = { ...user }
+							temp.groups.push("staff")
+							return temp
+						})
+					}
+				})
+		}
+	}
+
 	return (
 		<CardPage>
 			<Text fontSize="xl">{roll}</Text>
 			{user && (
 				<>
-					<Text fontSize="md">{user.name}</Text>
-					<Switch onChange={toggleActive} isChecked={user.active} />
+					<Text mb={2} fontSize="md">
+						{user.name}
+					</Text>
+					<Text fontSize="md">Active</Text>
+					<Switch mb={2} onChange={toggleActive} isChecked={user.active} />
+
+					<Text fontSize="md">Staff</Text>
+					<Switch mb={2} onChange={toggleStaff} isChecked={user.groups.indexOf("staff") !== -1} />
 				</>
 			)}
 		</CardPage>
