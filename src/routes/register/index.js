@@ -1,16 +1,5 @@
 import { useState } from "react"
-import {
-	FormControl,
-	FormLabel,
-	FormErrorMessage,
-	Alert,
-	Input,
-	Button,
-	Link,
-	UnorderedList,
-	ListItem,
-	Text
-} from "@chakra-ui/react"
+import { FormControl, FormLabel, Alert, Input, Button, Link, UnorderedList, ListItem, Text } from "@chakra-ui/react"
 import PhoneInput from "../../components/phoneInput"
 import { formatPhoneNumberIntl, isValidPhoneNumber } from "react-phone-number-input"
 import CardPage from "../../components/cardPage"
@@ -20,8 +9,7 @@ import axios from "../../axios"
 export default function Register() {
 	const [password, setPassword] = useState({
 		value: "",
-		error: false,
-		message: ""
+		req: null
 	})
 	const [roll, setRoll] = useState("")
 	const [name, setName] = useState("")
@@ -92,14 +80,32 @@ export default function Register() {
 	}
 
 	const handlePass = (event) => {
-		setPassword((pass) => {
-			let newPass = { ...pass }
-			if (pass.error) {
-				newPass.error = false
+		let errorText = []
+		let val = event.target.value
+		if (val.length > 0) {
+			if (val.length < 8) {
+				errorText.push("Password should have atleast 8 characters")
 			}
-			newPass.value = event.target.value
-			return newPass
-		})
+			if (val.indexOf(" ") !== -1) {
+				errorText.push("Password should not have spaces")
+			}
+			if (!/[A-Z]{1}/.test(val)) {
+				errorText.push("Password should have atleast 1 uppercase character")
+			}
+			if (!/[a-z]{1}/.test(val)) {
+				errorText.push("Password should have atleast 1 lowercase character")
+			}
+			if (!/\d/.test(val)) {
+				errorText.push("Password should have atleast 1 digit")
+			}
+			if (!/[!@#$%^&(){}[\]?><]{1}/.test(val)) {
+				errorText.push("Password should have atleast 1 special character(eg. @, #, $, ...)")
+			}
+		}
+		setPassword((pass) => ({
+			value: val,
+			req: errorText
+		}))
 	}
 
 	return (
@@ -111,7 +117,7 @@ export default function Register() {
 					autoComplete="off"
 					autoCapitalize="none"
 					value={roll}
-					onChange={(event) => setRoll(event.target.value)}
+					onChange={(event) => setRoll(event.target.value.trim())}
 				/>
 			</FormControl>
 			<FormControl mb={4} as="fieldset">
@@ -120,21 +126,35 @@ export default function Register() {
 			</FormControl>
 			<FormControl mb={4} as="fieldset">
 				<FormLabel htmlFor="room">Room No.</FormLabel>
-				<Input id="room" autoComplete="off" value={room} onChange={(event) => setRoom(event.target.value)} />
+				<Input id="room" autoComplete="off" value={room} onChange={(event) => setRoom(event.target.value.trim())} />
 			</FormControl>
 			<FormControl mb={4} as="fieldset">
 				<FormLabel htmlFor="gender">Gender</FormLabel>
-				<Input id="gender" autoComplete="off" value={gender} onChange={(event) => setGender(event.target.value)} />
+				<Input
+					id="gender"
+					autoComplete="off"
+					autoCapitalize="none"
+					value={gender}
+					onChange={(event) => setGender(event.target.value)}
+				/>
 			</FormControl>
 			<PhoneInput value={phone} onChange={setPhone} />
-			<FormControl mb={6} as="fieldset" isInvalid={password.error}>
+			<FormControl mb={6} as="fieldset">
 				<FormLabel htmlFor="password">Password</FormLabel>
 				<Input id="password" type="password" value={password.value} onChange={handlePass} />
-				{password.error && <FormErrorMessage>{password.message}</FormErrorMessage>}
+				{password.req && (
+					<UnorderedList mt={2} color="gray.600">
+						{password.req.map((req, index) => (
+							<ListItem fontSize="sm" key={index}>
+								{req}
+							</ListItem>
+						))}
+					</UnorderedList>
+				)}
 			</FormControl>
 			<Button
-				mb={8}
-				disabled={!(roll && password.value && !password.error && name && gender && phone && isValidPhoneNumber(phone))}
+				mb={10}
+				disabled={!(roll && password.value && !password.req[0] && name && gender && phone && isValidPhoneNumber(phone))}
 				variant="outline"
 				type="submit"
 			>
@@ -145,14 +165,14 @@ export default function Register() {
 					flexDirection="column"
 					sx={{ whiteSpace: "pre-line" }}
 					status={status.value ? "success" : "error"}
-					mb={8}
+					mb={10}
 				>
 					{status.message}
 				</Alert>
 			)}
 			<br />
 			<Link mb={10} as={RouterLink} to="/login">
-				Log In
+				Already Registered? Log In
 			</Link>
 		</CardPage>
 	)
